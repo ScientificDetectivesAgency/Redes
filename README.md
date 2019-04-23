@@ -1,5 +1,3 @@
-## Análisis de redes con PgRouting
-
 Para comenzar a trabajar esta vez no usaremos shapefiles independientes, utilizaremos el backup de una base de datos ya elaborada que hay que cargar desde pgadmin. Las tablas con las que vamos a trabajar son las siguientes: 
 
 | Tabla  | Descripción|
@@ -13,23 +11,21 @@ Para comenzar a trabajar esta vez no usaremos shapefiles independientes, utiliza
 | exportadoras  | Comercializadoras de café  |
 
 
-:shipit: **[1]** Generalmente este formato ya contiene las extensiones con las que se va a trabajar. Sin embargo como parte de la preparación de los datos crearemos la extensión pgrouting en pgadmin con el siguiente comando: 
+:shipit: **[1]** Este backup ya tiene la extensión postgis y como parte de la preparación de los datos crearemos la extensión pgrouting en pgadmin con el siguiente comando: 
 
 ```sql
 create extension pgrouting;
 ```
 
-Esto nos permite trabajar con todas las funciones disponibles de esta librería especializada en análisis de redes sobre datos geoespaciales. [Aquí](https://docs.pgrouting.org/2.4/en/index.html) puedes consultar la documentación de algunas de las funciones disponibles.
+Esto nos permite trabajar con todas las funciones disponibles de esta librería, especializada en análisis de redes sobre datos geoespaciales. [Aquí](https://docs.pgrouting.org/2.4/en/index.html) puedes consultar la documentación de algunas de las funciones disponibles.
 
-Dado que esta librería trabaja con datos geoespaciales generalmente vamos a trabajar con datos de vías de comunicación. Para comenzar a trabajar con redes necesitamos construir una topología. Esto significa que para cualquier arco (linea) de las vías de comunicación, los extremos de ese arco estarán unidos a un nodo único y a su vez a otros arcos. Una vez que todos los arcos están conectados a los nodos, tenemos un gráfico que se puede utilizar para hacer calculos con pgrouting.
+Dado que esta librería trabaja con datos geoespaciales generalmente vamos a trabajar con datos de vías de comunicación. Para comenzar a trabajar con redes necesitamos construir su topología. Esto significa que para cualquier arco (linea) de las vías de comunicación, los extremos de ese arco estarán unidos a un nodo único y a su vez a otros arcos. Una vez que todos los arcos están conectados a los nodos, tenemos un gráfico que se puede utilizar para hacer calculos con pgrouting.
 
-Para esta sección vamos a trabajar con dos tipos de redes una que corresponde a la Ciudad de México descargada de [Open Street Maps](https://www.openstreetmap.org/export#map=8/15.295/-92.568) y otra generada por el Instituto Mexicano del Transporte (IMT) que pertenece al estado de Chiapas.
+Para esta sección vamos a trabajar la red de Chiapas generada por el Instituto Mexicano del Transporte (IMT) y un problema sencillo sobre la posible optimización de la comercialización del café en sus diferentes etapas de procesamiento. 
 
 ### El café y Chiapas 
 
-Primero vamos a trabajar con un problema sencillo sobre la comercialización del café, como habrás observado en el backupt que restauramos tenemos la red de chiapas y tablas de puntos que corresponden a infraestructura involucrada en la comercialización y procesamiento de café (cultivos, beneficios, acopios y exportadoras). 
-
-:shipit: **[2]** Para crear la topología, necesitamos agregar dos campos para almacenar los nodos de orígen y destino de cada segmento:
+:shipit: **[2]** Ahora vamos a crear la topología, por lo que vamos a necesitar agregar dos campos para almacenar los nodos de orígen y destino de cada segmento:
 
 ```sql
 alter table imt_chiapas add column source integer;
