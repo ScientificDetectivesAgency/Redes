@@ -42,3 +42,5 @@ En nuestro caso:
 select pgr_createTopology('osm_cdmx', 0.05, 'geom', 'gid');
 ```
 Como pueden ver, esta función crea la tabla ```osm_cdmx_vertices_pgr```, idealmente esta tabla contiene todos los nodos de la red, examínenla en Qgis.
+
+:shipit:
