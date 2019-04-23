@@ -112,6 +112,7 @@ ORDER  BY start_vid, agg_cost asc;
 Para realizar la suma usamos el siguiente query: 
 
 ```sql
+create table costo_total as
 select a.*, 
 b.end_vid as exportadora
 b.agg_cost as cost_acop_exp, 
