@@ -43,4 +43,26 @@ select pgr_createTopology('osm_cdmx', 0.05, 'geom', 'gid');
 ```
 Como pueden ver, esta función crea la tabla ```osm_cdmx_vertices_pgr```, idealmente esta tabla contiene todos los nodos de la red, examínenla en Qgis.
 
+Ahora necesitamos determinar el costo que le vamos a asignar a cada arco, con costo nos referimos a una variable numerica que refleje la capacidad de transportarse por un segmento dado, puede ser tiempo, velocidad, longitud, pendiente, etc. 
+
+Si exploramos la tabla con ``` select * from osm_cdmx limit 10``` veremos las siguientes columnas:
+
+| columna  | 
+| ------------- | 
+| gid, geom, class_id |
+| x1,	y1,	x2,	y2 |
+|one_way, maxspeed	
+|osm_id, source_osm, target_osm	|	
+
+Como verás como un costo posible solo tenemos la velocidad (maxspeed), entonces vamos a calcular longitud y tiempo.
+
+```sql
+alter table osm_cdmx add column costo double precision;
+alter table osm_cdmx add column longitud float;
+alter table osm_cdmx add column tiempo float;
+
+update osm_cdmx set longitud = st_length(geom)/1000 
+update osm_cdmx set tiempo = (longitud/maxspeed::float)*60
+```
+
 :shipit:
