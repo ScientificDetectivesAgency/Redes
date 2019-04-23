@@ -11,7 +11,7 @@ Para comenzar a trabajar esta vez no usaremos shapefiles independientes, utiliza
 | exportadoras  | Comercializadoras de café  |
 
 
-:shipit: **[1]** Este backup ya tiene la extensión postgis y como parte de la preparación de los datos crearemos la extensión pgrouting en pgadmin con el siguiente comando: 
+**[1]** Este backup ya tiene la extensión postgis y como parte de la preparación de los datos crearemos la extensión pgrouting en pgadmin con el siguiente comando: 
 
 ```sql
 create extension pgrouting;
@@ -19,13 +19,13 @@ create extension pgrouting;
 
 Esto nos permite trabajar con todas las funciones disponibles de esta librería, especializada en análisis de redes sobre datos geoespaciales. [Aquí](https://docs.pgrouting.org/2.4/en/index.html) puedes consultar la documentación de algunas de las funciones disponibles.
 
-Dado que esta librería trabaja con datos geoespaciales generalmente vamos a trabajar con datos de vías de comunicación. Para comenzar a trabajar con redes necesitamos construir su topología. Esto significa que para cualquier arco (linea) de las vías de comunicación, los extremos de ese arco estarán unidos a un nodo único y a su vez a otros arcos. Una vez que todos los arcos están conectados a los nodos, tenemos un gráfico que se puede utilizar para hacer calculos con pgrouting.
+Primero es necesario crear la topología, esto significa que para cualquier arco (linea) de las vías de comunicación, los extremos de ese arco estarán unidos a un nodo único y a su vez a otros arcos. Una vez que todos los arcos están conectados a los nodos, tenemos un gráfico que se puede utilizar para hacer calculos con pgrouting.
 
 Para esta sección vamos a trabajar la red de Chiapas generada por el Instituto Mexicano del Transporte (IMT) y un problema sencillo sobre la posible optimización de la comercialización del café en sus diferentes etapas de procesamiento. 
 
 ### El café y Chiapas 
 
-:shipit: **[2]** Ahora vamos a crear la topología, por lo que vamos a necesitar agregar dos campos para almacenar los nodos de orígen y destino de cada segmento:
+**[2]** Para crear la topología vamos a necesitar agregar dos campos para almacenar los nodos de orígen y destino de cada segmento:
 
 ```sql
 alter table imt_chiapas add column source integer;
