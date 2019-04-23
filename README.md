@@ -1,37 +1,44 @@
-## Welcome to GitHub Pages
+Para comenzar a trabajar esta vez no usaremos shapefiles independientes, utilizaremos el backup de una base de datos ya elaborada que hay que cargar desde pgadmin. Las tablas con las que vamos a trabajar son las siguientes: 
 
-You can use the [editor on GitHub](https://github.com/ScientificDetectivesAgency/redes/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+| Tabla  | Descripción|
+| ------------- | ------------- |
+| osm_cdmx  | Red CDMX (OSM)  |
+| estaciones  | Estaciones simuladas de bomberos  |
+| imt_chiapas  | Red Chiapas (IMT)  |
+| cultivo  | Zonas de cultivo de café  |
+| acopios  | Lugar para el almacenamiento de cafe  |
+| beneficios  | Punto de procesado y tostado de café  |
+| exportadoras  | Comercializadoras de café  |
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+Generalmente este formato ya contiene las extensiones con las que se va a trabajar. Sin embargo como parte de la preparación de los datos crearemos la extensión pgrouting con el siguiente comando: 
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```sql
+create extension pgrouting;
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+Esto nos permite trabajar con todas las funciones disponibles de esta librería especializada en análisis de redes sobre datos geoespaciales. [Aquí](https://docs.pgrouting.org/2.4/en/index.html) puedes consultar la documentación de algunas de las funciones disponibles.
 
-### Jekyll Themes
+Dado que esta librería trabaja con datos geoespaciales generalmente vamos a trabajar con datos de vías de comunicación. Para comenzar a trabajar con redes necesitamos construir una topología. Esto significa que para cualquier arco (linea) de las vías de comunicación, los extremos de ese arco estarán unidos a un nodo único y a su vez a otros arcos. Una vez que todos los arcos están conectados a los nodos, tenemos un gráfico que se puede utilizar para hacer calculos con pgrouting.
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ScientificDetectivesAgency/redes/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+Para esta sección vamos a trabajar con dos tipos de redes una que corresponde a la Ciudad de México descargada de [Open Street Maps](https://www.openstreetmap.org/export#map=8/15.295/-92.568) y otra generada por el Instituto Mexicano del Transporte (IMT) que pertenece al estado de Chiapas.
 
-### Support or Contact
+Primero trabajaremos con la red de OSM (osm_cdmx), para comenzar a crear la topología necesitamos agregar dos campos para almacenar los nodos de orígen y destino de cada segmento:
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```sql
+alter table calles add column source integer;
+alter table calles add column target integer;
+```
+
+Ahora, vamos a llamar a la función ```select pgr_createTopology('lines', tolerancia, 'geom', 'id')```, para crear los nodos y asignar los identificadores correspondientes. Los argumentos de la función son los siguientes:
+
+**lines:** Tabla con las geometrías
+**tolerancia:** Distancia (en las unidades de la proyección) máxima para considerar dos lineas unidas.
+**geom:** Columna con geometría.
+**id:** columna con el identificador único.
+
+En nuestro caso:
+```sql
+select pgr_createTopology('osm_cdmx', 0.05, 'geom', 'gid');
+```
+Como pueden ver, esta función crea la tabla ```osm_cdmx_vertices_pgr```, idealmente esta tabla contiene todos los nodos de la red, examínenla en Qgis.
