@@ -32,7 +32,7 @@ alter table imt_chiapas add column source integer;
 alter table imt_chiapas add column target integer;
 ```
 
-:shipit: **[3]** Ahora, vamos a llamar a la función ```select pgr_createTopology('lines', tolerancia, 'geom', 'id')```, para crear los nodos y asignar los identificadores correspondientes. Los argumentos de la función son los siguientes:
+**[3]** Ahora, vamos a llamar a la función ```select pgr_createTopology('lines', tolerancia, 'geom', 'id')```, para crear los nodos y asignar los identificadores correspondientes. Los argumentos de la función son los siguientes:
 
 **lines:** Tabla con las geometrías
 **tolerancia:** Distancia (en las unidades de la proyección) máxima para considerar dos lineas unidas.
@@ -45,7 +45,7 @@ select pgr_createTopology('imt_chiapas', 0.05, 'geom', 'gid');
 ```
 Como pueden ver, esta función crea la tabla ```imt_chiapas_vertices_pgr``` que contiene todos los nodos de la red, examínenla en Qgis.
 
-:shipit: **[4]** Tener la topología calculada ahora nos permite trabajar con puntos que por la forma en que fueron georeferenciados no siempre caen exactamente sobre la red, asignandoles el id del nodo  de la tabla ```imt_chiapas_vertices_pgr```: 
+**[4]** Tener la topología calculada ahora nos permite trabajar con puntos que por la forma en que fueron georeferenciados no siempre caen exactamente sobre la red, asignandoles el id del nodo  de la tabla ```imt_chiapas_vertices_pgr```: 
 
 
 ```sql
@@ -77,7 +77,7 @@ alter table imt_chiapas add column tiempo float;
 update imt_chiapas set longitud = st_length(geom)/1000 
 update imt_chiapas set tiempo = (longitud/maxspeed::float)*60
 ```
-:shipit: **[6]** Una vez calculados los costos, podemos comenzar a trabajar con los datos. Lo primero que vamos a hacer es explorar las relaciones entre la infraestructura relacionada con su producción y calcular rutas con diferentes costos con [Dijkstra](http://docs.pgrouting.org/2.0/en/src/dijkstra/doc/index.html#pgr-dijkstra):
+**[6]** Una vez calculados los costos, podemos comenzar a trabajar con los datos. Lo primero que vamos a hacer es explorar las relaciones entre la infraestructura relacionada con su producción y calcular rutas con diferentes costos con [Dijkstra](http://docs.pgrouting.org/2.0/en/src/dijkstra/doc/index.html#pgr-dijkstra):
 
 ```sql
 select b.geom, a.*
@@ -91,7 +91,7 @@ from
 join #TABLA RED# b
 on a.id = b.id
 ```
-:shipit: **[7]** Una parte importante de explorar las relaciones en la cadena de producción de café es identificar qué productores llevan su café a procesar, almacenar y vender en los diferentes puntos de infrestructura, para evaluar y es posible optimizar la forma en que se dan actualmente estas relaciones, para ello vamos a utilizar [pgr_dijkstraCost](https://docs.pgrouting.org/2.2/en/src/dijkstra/doc/pgr_dijkstraCost.html), esta función _calcula la suma de los costos de la ruta más corta para un subconjunto de pares de nodos de la red_.
+**[7]** Una parte importante de explorar las relaciones en la cadena de producción de café es identificar qué productores llevan su café a procesar, almacenar y vender en los diferentes puntos de infrestructura, para evaluar y es posible optimizar la forma en que se dan actualmente estas relaciones, para ello vamos a utilizar [pgr_dijkstraCost](https://docs.pgrouting.org/2.2/en/src/dijkstra/doc/pgr_dijkstraCost.html), esta función _calcula la suma de los costos de la ruta más corta para un subconjunto de pares de nodos de la red_.
 
 ```sql
 create table cultivo_beneficios as 
@@ -107,7 +107,7 @@ ORDER  BY start_vid, agg_cost asc;
 ```
 **NOTA:** Calcularlo para cada una de las etapas de la cadena productiva de cafe, _cultivo-beneficio, beneficio-acopio, acopio-exportadora_.
 
-:shipit: **[8]** Si sumamos de cada tabla el _agg_cost_ podemos identificar qué tan difícile es para un productor de café transportarlo hasta el lugar donde se va a comercializar. Y es posible elaborar un raster de costo para verlo de forma continua en el espacio.
+**[8]** Si sumamos de cada tabla el _agg_cost_ podemos identificar qué tan difícile es para un productor de café transportarlo hasta el lugar donde se va a comercializar. Y es posible elaborar un raster de costo para verlo de forma continua en el espacio.
 
 Para realizar la suma usamos el siguiente query: 
 
@@ -130,7 +130,7 @@ on a.acopio = b.start_vid
 ```
 Ahora en Qgis con IDW interpolamos la columna costo_total, si quisieramos evluar el costo por etapa entonces interpolamos los costos por separado. 
 
-:shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit: :shipit:
+
  
 
 
